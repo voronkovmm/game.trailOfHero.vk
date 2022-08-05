@@ -1,0 +1,1 @@
+# game.trailOfHero.vk
