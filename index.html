@@ -8,8 +8,8 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
 	
-	<!-- Yandex Games SDK -->
-	<script src="https://yandex.ru/games/sdk/v2"></script>
+	<!-- Vkontakte SDK -->
+	<script src ="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   </head>
   <body class="dark">
     <div id="unity-container" class="unity-desktop">
@@ -26,7 +26,7 @@
     </div>
     <div id="unity-fullscreen-button" style="display: none;"></div>
     <script>
-      const hideFullScreenButton = "1";
+      const hideFullScreenButton = "";
       const buildUrl = "Build";
       const loaderUrl = buildUrl + "/new.loader.js";
       const config = {
@@ -64,147 +64,47 @@
 
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         container.className = "unity-mobile";
-        config.devicePixelRatio = 1;
+        config.devicePixelRatio = window.devicePixelRatio;
       }
       loadingCover.style.display = "";
 	  
-	  <!-- Yandex Code -->
-	  <!-- 2 -->
-	var player;
-    var sdk;
-    var payments = null;
-	var newInstance = null;
 
-      const script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          spinner.style.display = "none";
-          progressBarEmpty.style.display = "";
-          progressBarFull.style.width = `${100 * progress}%`;
-        }).then((unityInstance) => {
-		
-			newInstance = unityInstance;
-			loadingCover.style.display = "none";
-			
-          if (canFullscreen) {
-            if (!hideFullScreenButton) {
-              fullscreenButton.style.display = "";
-            }
-            fullscreenButton.onclick = () => {
-              unityInstance.SetFullscreen(1);
-            };
-          }
-        }).catch((message) => {
-          alert(message);
-        });
-      };
+
+
+
+
+
 	  
-	  <!-- YaGames init --> 
-	  YaGames.init({
-            adv: {
-                onAdvClose: wasShown => {
-                      console.info('adv closed!');
-                }
-            }
-        })
-        .then(ysdk => {
-            sdk = ysdk;
-            sdk.adv.showFullscreenAdv({callbacks:{}});
-      });
-
-
-      function auth(){
-        sdk.auth.openAuthDialog().then(() => {
-                // Игрок успешно авторизован, теперь объект Player будет инициализирован.
-                initPlayer();
-                console.log('auth ok');
-            }).catch(() => {
-                 // Игрок не авторизован.
-                 console.log('auth failed');
-            });
-      }
-
-      function initPlayer(){
-        return sdk.getPlayer().then(_player => {
-                player = _player;       
-            }).catch(err => {
-                // Если игрок не авторизован, выбрасывает исключение USER_NOT_AUTHORIZED.
-            });
-      }
-
-      function getUserData(){
-        if(initPlayer){
-          var data = {"id" : player.getID(), "name" : player.getName(), "avatarUrlSmall" : player.getPhoto('small'), "avatarUrlMedium" : player.getPhoto('medium'), "avatarUrlLarge" : player.getPhoto('large')};
-          newInstance.SendMessage('YandexSDK', 'StoreUserData', JSON.stringify(data));
-        }
-      }
-
-      function showFullscrenAd(){
-        sdk.adv.showFullscreenAdv({
-          callbacks: {
-            onClose: function(wasShown) {
-              newInstance.SendMessage('YandexSDK', 'OnInterstitialShown');
-            },
-            onError: function(error) {
-              newInstance.SendMessage('YandexSDK', 'OnInterstitialFailed', error);
-            }
-          }
-        })
-      }
-
-      function showRewardedAd(id){
-        sdk.adv.showRewardedVideo({
-        callbacks: {
-            onOpen: () => {
-                newInstance.SendMessage('YandexSDK', 'OnRewardedOpen', id);
-                console.log('Video ad open. Id: ' + id);
-            },
-            onRewarded: () => {
-                newInstance.SendMessage('YandexSDK', 'OnRewarded', id);
-                console.log('Rewarded! Id: ' + id);
-            },
-            onClose: () => {
-                newInstance.SendMessage('YandexSDK', 'OnRewardedClose', id);
-                console.log('Video ad closed. Id: ' + id);
-            }, 
-            onError: (e) => {
-                var data = {"id" : id, "error" : error};
-                newInstance.SendMessage('YandexSDK', 'OnRewardedError', JSON.stringify(data));
-                console.log('Error while open video ad:', e);
-            }
-          }
-        })
-      }
-
-      function initPayments(){
-        sdk.getPayments().then(_payments => {
-          // Покупки доступны.
-          payments = _payments;
-        }).catch(err => {
-        })
-      }
-
-      function buy(id){
-        payments.purchase(id).then(purchase => {
-          // Покупка успешно совершена!
-          newInstance.SendMessage('YandexSDK', 'OnPurchaseSuccess', id);
-        }).catch(err => {
-          // Покупка не удалась: в консоли разработчика не добавлен товар с таким id,
-          // пользователь не авторизовался, передумал и закрыл окно оплаты,
-          // истекло отведенное на покупку время, не хватило денег и т. д.
-          newInstance.SendMessage('YandexSDK', 'OnPurchaseFailed', err);
-        })
-      }
-
-      window.onbeforeunload = function(e) {
-        console.log("Calling OnClose from Browser!");
-        gameInstance.SendMessage("YandexSDK", "OnClose");
-    
-        var dialogText = "You game has been saved!  Would you like to continue unloading the page?";
-        e.returnValue = dialogText;
-        return dialogText;
-      };
+	  <!-- Vkontakte code -->
+	  vkBridge.send('VKWebAppInit');
+	  
+	  function showRewardAd()
+	  {
+		vkBridge.send("VKWebAppShowNativeAds", {ad_format:"reward","use_waterfall": true})
+		.then(data =>
+			if(data.result) {
+				newInstance.SendMessage('VkontakteSDK', 'OnInterstitialShown');
+				})
+		.catch(error => console.log(error));
+	  }
+	  
+	  function showNativeAd()
+	  {
+		vkBridge.send("VKWebAppShowNativeAds", {ad_format:"interstitial"})
+		.then(data => console.log(data.result))
+		.catch(error => console.log(error));
+	  }
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
 	  
       document.body.appendChild(script);
     </script>
