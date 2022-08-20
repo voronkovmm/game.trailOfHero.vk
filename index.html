@@ -68,11 +68,14 @@
       }
       loadingCover.style.display = "";
 	  
+
+
+
+		<!-- Переменная для Unity -->
+		var newInstance = null;
 		
 		
-		
-		
-		
+		<!-- Расширение экрана -->
 		const script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
@@ -99,16 +102,13 @@
       };
 
 
-
-
-
 	  
 	  <!-- Vkontakte code -->
 	  vkBridge.send('VKWebAppInit');
 	  
 	  function showRewardAd()
 	  {
-		vkBridge.send("VKWebAppShowNativeAds", {ad_format:"reward","use_waterfall": true})
+		vkBridge.send("VKWebAppShowNativeAds", {ad_format:"reward"})
 		.then(data => newInstance.SendMessage('VkontakteSDK', 'OnInterstitialShown'))
 		.catch(error => console.log(error));
 	  }
@@ -122,8 +122,16 @@
 	  
 	  
 	  
-	  
-	  
+	  <!-- Отображение рекламы перед загрузкой страницы -->
+	  window.onbeforeunload = function(e) {
+        console.log("Calling OnClose from Browser!");
+        
+		showNativeAd();
+    
+        var dialogText = "You game has been saved!  Would you like to continue unloading the page?";
+        e.returnValue = dialogText;
+        return dialogText;
+      };
 	  
 	  
 	  
