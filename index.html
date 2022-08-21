@@ -63,9 +63,9 @@
       }());
 
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        container.className = "unity-mobile";
-        config.devicePixelRatio = window.devicePixelRatio;
-      }
+			container.className = "unity-mobile";
+			config.devicePixelRatio = Math.min(config.devicePixelRatio, 2); // added
+		}
       loadingCover.style.display = "";
 	  
 
