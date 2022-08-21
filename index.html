@@ -128,7 +128,10 @@
 	  {
 		vkBridge.send("VKWebAppShowNativeAds", {ad_format:"interstitial"})
 		.then(data => newInstance.SendMessage('VkontakteSDK', 'OnInterstitialShow'))
-		.catch(error => console.log(error));
+		.catch(error => {
+			newInstance.SendMessage('VkontakteSDK', 'OnInterstitialShow');
+			console.log(error);
+		});
 	  }
 	  
 	  
