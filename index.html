@@ -115,8 +115,8 @@
 	  {
 		vkBridge.send("VKWebAppShowNativeAds", {ad_format:"reward"})
 		.then(data => {
-			if(data.result) newInstance.SendMessage('VkontakteSDK', 'OnRewardedShow', true);
-			else newInstance.SendMessage('VkontakteSDK', 'OnRewardedShow', false);
+			if(data.result) newInstance.SendMessage('VkontakteSDK', 'OnRewardedShow', 1);
+			else newInstance.SendMessage('VkontakteSDK', 'OnRewardedShow', 0);
 		})
 		.catch(error => console.log(error));
 	  }
