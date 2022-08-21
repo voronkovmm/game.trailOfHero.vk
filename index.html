@@ -114,14 +114,18 @@
 	  function showRewardAd()
 	  {
 		vkBridge.send("VKWebAppShowNativeAds", {ad_format:"reward"})
-		.then(data => newInstance.SendMessage('VkontakteSDK', 'OnInterstitialShown'))
+		.then(data => {
+			if(data.result) newInstance.SendMessage('VkontakteSDK', 'OnRewardedShow'))
+		})
 		.catch(error => console.log(error));
 	  }
 	  
 	  function showNativeAd()
 	  {
 		vkBridge.send("VKWebAppShowNativeAds", {ad_format:"interstitial"})
-		.then(data => console.log(data.result))
+		.then(data => {
+			if(data.result) newInstance.SendMessage('VkontakteSDK', 'OnInterstitialShow'))
+		})
 		.catch(error => console.log(error));
 	  }
 	  
