@@ -64,7 +64,7 @@
 
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
 			container.className = "unity-mobile";
-			config.devicePixelRatio = 1; // added
+			config.devicePixelRatio = Math.min(config.devicePixelRatio, 2); // added
 		}
       loadingCover.style.display = "";
 	  
